@@ -19,6 +19,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/sirupsen/logrus"
 
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/keyserver/api"
@@ -248,6 +249,12 @@ func (d *Database) StoreCrossSigningSigsForTarget(
 		if err := d.CrossSigningSigsTable.UpsertCrossSigningSigsForTarget(ctx, nil, originUserID, originKeyID, targetUserID, targetKeyID, signature); err != nil {
 			return fmt.Errorf("d.CrossSigningSigsTable.InsertCrossSigningSigsForTarget: %w", err)
 		}
+		logrus.WithFields(logrus.Fields{
+			"originUserID": originUserID,
+			"originKeyID":  originKeyID,
+			"targetUserID": targetUserID,
+			"targetKeyID":  targetKeyID,
+		}).Debugf("inserted signing sigs")
 		return nil
 	})
 }

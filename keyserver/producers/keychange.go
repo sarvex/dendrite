@@ -72,7 +72,6 @@ func (p *KeyChange) ProduceKeyChanges(keys []api.DeviceMessage) error {
 }
 
 func (p *KeyChange) ProduceSigningKeyUpdate(key eduapi.CrossSigningKeyUpdate) error {
-	key.Processed = true
 	output := &api.DeviceMessage{
 		Type: api.TypeCrossSigningUpdate,
 		OutputCrossSigningKeyUpdate: &eduapi.OutputCrossSigningKeyUpdate{

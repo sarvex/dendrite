@@ -146,7 +146,7 @@ func (s *OutputRoomEventConsumer) processInviteEvent(ctx context.Context, event 
 	/*if event.NewInviteEvent.Event.Origin() == s.cfg.Matrix.ServerName {
 		return nil
 	}*/
-	/*userID := *event.NewInviteEvent.Event.StateKey()
+	userID := *event.NewInviteEvent.Event.StateKey()
 
 	res := keyapi.QueryDeviceMessagesResponse{}
 	s.keyAPI.QueryDeviceMessages(ctx, &keyapi.QueryDeviceMessagesRequest{UserID: userID}, &res)
@@ -181,7 +181,7 @@ func (s *OutputRoomEventConsumer) processInviteEvent(ctx context.Context, event 
 			log.WithError(err).Error("unable to send EDU to inviting server")
 			return err
 		}
-	}*/
+	}
 
 	return nil
 }

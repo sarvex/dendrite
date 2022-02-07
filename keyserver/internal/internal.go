@@ -224,7 +224,6 @@ func (a *KeyInternalAPI) QueryDeviceMessages(ctx context.Context, req *api.Query
 }
 
 func (a *KeyInternalAPI) QueryKeys(ctx context.Context, req *api.QueryKeysRequest, res *api.QueryKeysResponse) {
-	logrus.Debugf("queryKeys req: %+v", req)
 	res.DeviceKeys = make(map[string]map[string]json.RawMessage)
 	res.MasterKeys = make(map[string]gomatrixserverlib.CrossSigningKey)
 	res.SelfSigningKeys = make(map[string]gomatrixserverlib.CrossSigningKey)
@@ -233,7 +232,7 @@ func (a *KeyInternalAPI) QueryKeys(ctx context.Context, req *api.QueryKeysReques
 
 	// get cross-signing keys from the database
 	a.crossSigningKeysFromDatabase(ctx, req, res)
-
+	logrus.Debugf("QueryKeys.crossSigningKeysFromDatabase: %+v", req)
 	// make a map from domain to device keys
 	domainToDeviceKeys := make(map[string]map[string][]string)
 	domainToCrossSigningKeys := make(map[string]map[string]struct{})
@@ -302,15 +301,12 @@ func (a *KeyInternalAPI) QueryKeys(ctx context.Context, req *api.QueryKeysReques
 			domainToCrossSigningKeys[domain][userID] = struct{}{}
 		}
 	}
-	logrus.Debugf("QueryKeys 1: %+v", res)
-	logrus.Debugf("QueryKeys 2: %+v", res.DeviceKeys)
+
 	// attempt to satisfy key queries from the local database first as we should get device updates pushed to us
 	domainToDeviceKeys = a.remoteKeysFromDatabase(ctx, res, domainToDeviceKeys)
 	if len(domainToDeviceKeys) > 0 || len(domainToCrossSigningKeys) > 0 {
 		// perform key queries for remote devices
-		logrus.Debugf("queryRemoteKeys %+v", res.DeviceKeys)
 		a.queryRemoteKeys(ctx, req.Timeout, res, domainToDeviceKeys, domainToCrossSigningKeys)
-		logrus.Debugf("queryRemoteKeys response %+v", res.DeviceKeys)
 	}
 	logrus.Debugf("QueryKeys 3: %+v", res.DeviceKeys)
 	// Finally, append signatures that we know about
@@ -319,18 +315,16 @@ func (a *KeyInternalAPI) QueryKeys(ctx context.Context, req *api.QueryKeysReques
 	for userID, forUserID := range res.DeviceKeys {
 		for deviceID, key := range forUserID {
 
-			logrus.Debugf("getting crossSigsForTarget: %s - %s", userID, string(key))
+			logrus.Debugf("getting crossSigsForTarget: %s - %s", userID, deviceID)
 			sigMap, err := a.DB.CrossSigningSigsForTarget(ctx, userID, gomatrixserverlib.KeyID(deviceID))
 			if err != nil {
 				logrus.WithError(err).Errorf("a.DB.CrossSigningSigsForTarget failed")
 				continue
 			}
-			logrus.Debugf("sigmap: %+v", sigMap)
+			logrus.Debugf("sigMap: %+v", sigMap)
 			if len(sigMap) == 0 {
-				logrus.Debugf("sigmap is empty")
 				continue
 			}
-			logrus.Debugf("sigmap is not empty")
 			var deviceKey gomatrixserverlib.DeviceKeys
 			if err = json.Unmarshal(key, &deviceKey); err != nil {
 				logrus.WithError(err).Errorf("a.DB.CrossSigningSigsForTarget Unmarshal failed")
@@ -436,6 +430,7 @@ func (a *KeyInternalAPI) queryRemoteKeys(
 		// TODO: do we want to persist these somewhere now
 		// that we have fetched them?
 	}
+	logrus.Debugf("remote keys result: %+v", res)
 }
 
 func (a *KeyInternalAPI) queryRemoteKeysOnServer(
