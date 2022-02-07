@@ -92,6 +92,10 @@ func (t *OutputCrossSigningKeyUpdateConsumer) onMessage(ctx context.Context, msg
 
 func (s *OutputCrossSigningKeyUpdateConsumer) onCrossSigningMessage(m api.DeviceMessage) bool {
 	output := m.CrossSigningKeyUpdate
+	logrus.Printf("keyserver.onCrossSigningMessage %+v \n\n", output)
+	if output.Processed {
+		return true
+	}
 	_, host, err := gomatrixserverlib.SplitID('@', output.UserID)
 	if err != nil {
 		logrus.WithError(err).Errorf("eduserver output log: user ID parse failure")
@@ -114,6 +118,7 @@ func (s *OutputCrossSigningKeyUpdateConsumer) onCrossSigningMessage(m api.Device
 	uploadRes := &api.PerformUploadDeviceKeysResponse{}
 	s.keyAPI.PerformUploadDeviceKeys(context.TODO(), uploadReq, uploadRes)
 	if uploadRes.Error != nil {
+		logrus.Printf("PerformUploadDeviceKeys: %+v \n", *uploadRes.Error)
 		// If the error is due to a missing or invalid parameter then we'd might
 		// as well just acknowledge the message, because otherwise otherwise we'll
 		// just keep getting delivered a faulty message over and over again.

@@ -98,6 +98,7 @@ func (t *EDUServerInputAPI) InputCrossSigningKeyUpdate(
 
 	logrus.WithFields(logrus.Fields{
 		"user_id": request.UserID,
+		"msg":     string(eventJSON),
 	}).Tracef("Producing to topic '%s'", t.OutputKeyChangeEventTopic)
 
 	_, err = t.JetStream.PublishMsg(&nats.Msg{

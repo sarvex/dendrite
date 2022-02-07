@@ -17,6 +17,7 @@ package producers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	eduapi "github.com/matrix-org/dendrite/eduserver/api"
 	"github.com/matrix-org/dendrite/keyserver/api"
@@ -71,12 +72,14 @@ func (p *KeyChange) ProduceKeyChanges(keys []api.DeviceMessage) error {
 }
 
 func (p *KeyChange) ProduceSigningKeyUpdate(key eduapi.CrossSigningKeyUpdate) error {
+	key.Processed = true
 	output := &api.DeviceMessage{
 		Type: api.TypeCrossSigningUpdate,
 		OutputCrossSigningKeyUpdate: &eduapi.OutputCrossSigningKeyUpdate{
 			CrossSigningKeyUpdate: key,
 		},
 	}
+	fmt.Printf("ProduceSigningKeyUpdate %+v\n\n", key)
 
 	id, err := p.DB.StoreKeyChange(context.Background(), key.UserID)
 	if err != nil {

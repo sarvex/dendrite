@@ -186,6 +186,7 @@ func (t *KeyChangeConsumer) onCrossSigningMessage(m api.DeviceMessage) bool {
 		Type:   eduserverAPI.MSigningKeyUpdate,
 		Origin: string(t.serverName),
 	}
+	output.Processed = false
 	if edu.Content, err = json.Marshal(output); err != nil {
 		logger.WithError(err).Error("fedsender key change consumer: failed to marshal output, dropping")
 		return true
