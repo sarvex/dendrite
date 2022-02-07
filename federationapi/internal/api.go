@@ -4,6 +4,8 @@ import (
 	"crypto/ed25519"
 	"encoding/base64"
 	"fmt"
+	"github.com/matrix-org/dendrite/federationapi/consumers"
+	keyserverAPI "github.com/matrix-org/dendrite/keyserver/api"
 	"sync"
 	"time"
 
@@ -30,6 +32,7 @@ type FederationInternalAPI struct {
 	keyRing    *gomatrixserverlib.KeyRing
 	queues     *queue.OutgoingQueues
 	joins      sync.Map // joins currently in progress
+	rsConsumer *consumers.OutputRoomEventConsumer
 }
 
 func NewFederationInternalAPI(
@@ -40,6 +43,7 @@ func NewFederationInternalAPI(
 	caches *caching.Caches,
 	queues *queue.OutgoingQueues,
 	keyRing *gomatrixserverlib.KeyRing,
+	rsConsumer *consumers.OutputRoomEventConsumer,
 ) *FederationInternalAPI {
 	serverKeyDB, err := cache.NewKeyDatabase(db, caches)
 	if err != nil {
@@ -104,7 +108,12 @@ func NewFederationInternalAPI(
 		federation: federation,
 		statistics: statistics,
 		queues:     queues,
+		rsConsumer: rsConsumer,
 	}
+}
+
+func (a *FederationInternalAPI) SetKeyserverAPI(k keyserverAPI.KeyInternalAPI) {
+	a.rsConsumer.SetKeyserverAPI(k)
 }
 
 func (a *FederationInternalAPI) isBlacklistedOrBackingOff(s gomatrixserverlib.ServerName) (*statistics.ServerStatistics, error) {

@@ -18,6 +18,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/sirupsen/logrus"
 
 	"github.com/matrix-org/dendrite/internal"
 	"github.com/matrix-org/dendrite/internal/sqlutil"
@@ -103,6 +104,7 @@ func (s *crossSigningSigsStatements) UpsertCrossSigningSigsForTarget(
 	if _, err := sqlutil.TxStmt(txn, s.upsertCrossSigningSigsForTargetStmt).ExecContext(ctx, originUserID, originKeyID, targetUserID, targetKeyID, signature); err != nil {
 		return fmt.Errorf("s.upsertCrossSigningSigsForTargetStmt: %w", err)
 	}
+	logrus.Debugf("stored crosssigningsig for %s -%s- %s", originUserID, targetKeyID, string(signature))
 	return nil
 }
 

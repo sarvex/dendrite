@@ -126,5 +126,5 @@ func NewInternalAPI(
 		logrus.WithError(err).Panic("failed to start key server consumer")
 	}
 
-	return internal.NewFederationInternalAPI(federationDB, cfg, rsAPI, federation, stats, caches, queues, keyRing)
+	return internal.NewFederationInternalAPI(federationDB, cfg, rsAPI, federation, stats, caches, queues, keyRing, rsConsumer)
 }

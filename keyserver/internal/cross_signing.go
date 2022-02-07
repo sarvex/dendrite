@@ -488,12 +488,15 @@ func (a *KeyInternalAPI) crossSigningKeysFromDatabase(
 }
 
 func (a *KeyInternalAPI) QuerySignatures(ctx context.Context, req *api.QuerySignaturesRequest, res *api.QuerySignaturesResponse) {
+	logrus.Debugf("querySignatures: %+v", req.TargetIDs)
 	for targetUserID, forTargetUser := range req.TargetIDs {
+		logrus.Debugf("CrossSigningKeysForUser %s", targetUserID)
 		keyMap, err := a.DB.CrossSigningKeysForUser(ctx, targetUserID)
 		if err != nil && err != sql.ErrNoRows {
 			res.Error = &api.KeyError{
 				Err: fmt.Sprintf("a.DB.CrossSigningKeysForUser: %s", err),
 			}
+			logrus.WithError(err).Errorf("unable to query CrossSigningKeysForUser")
 			continue
 		}
 
@@ -520,6 +523,7 @@ func (a *KeyInternalAPI) QuerySignatures(ctx context.Context, req *api.QuerySign
 		}
 
 		for _, targetKeyID := range forTargetUser {
+			logrus.Debugf("targetUserID: %s - targetKeyID: %+v", targetUserID, targetKeyID)
 			sigMap, err := a.DB.CrossSigningSigsForTarget(ctx, targetUserID, targetKeyID)
 			if err != nil && err != sql.ErrNoRows {
 				res.Error = &api.KeyError{

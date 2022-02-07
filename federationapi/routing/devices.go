@@ -14,6 +14,7 @@ package routing
 
 import (
 	"encoding/json"
+	"github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/matrix-org/dendrite/clientapi/jsonerror"
@@ -44,7 +45,7 @@ func GetUserDevices(
 	}
 	sigRes := &keyapi.QuerySignaturesResponse{}
 	keyAPI.QuerySignatures(req.Context(), sigReq, sigRes)
-
+	logrus.Debugf("keyAPI.QuerySignatures: %+v", sigRes)
 	response := gomatrixserverlib.RespUserDevices{
 		UserID:   userID,
 		StreamID: res.StreamID,
