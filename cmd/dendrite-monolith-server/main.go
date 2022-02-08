@@ -105,7 +105,6 @@ func main() {
 		keyserver.AddInternalRoutes(base.InternalAPIMux, keyAPI)
 		keyAPI = base.KeyServerHTTPClient()
 	}
-	fsAPI.SetKeyserverAPI(keyAPI)
 
 	userImpl := userapi.NewInternalAPI(accountDB, &cfg.UserAPI, cfg.Derived.ApplicationServices, keyAPI)
 	userAPI := userImpl

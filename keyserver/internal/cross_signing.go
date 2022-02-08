@@ -196,7 +196,6 @@ func (a *KeyInternalAPI) PerformUploadDeviceKeys(ctx context.Context, req *api.P
 		}
 		return
 	}
-	logrus.Println("StoreCrossSigningKeysForUser")
 
 	// Now upload any signatures that were included with the keys.
 	for _, key := range byPurpose {
@@ -209,6 +208,13 @@ func (a *KeyInternalAPI) PerformUploadDeviceKeys(ctx context.Context, req *api.P
 				continue
 			}
 			for sigKeyID, sigBytes := range forSigUserID {
+				logrus.WithFields(logrus.Fields{
+					"sigUserID":   sigUserID,
+					"sigKeyID":    sigKeyID,
+					"reqUserID":   req.UserID,
+					"targetKeyID": targetKeyID,
+				}).Debugf("StoreCrossSigningSigsForTarget: %s", sigBytes.Encode())
+
 				if err := a.DB.StoreCrossSigningSigsForTarget(ctx, sigUserID, sigKeyID, req.UserID, targetKeyID, sigBytes); err != nil {
 					res.Error = &api.KeyError{
 						Err: fmt.Sprintf("a.DB.StoreCrossSigningSigsForTarget: %s", err),
@@ -309,8 +315,15 @@ func (a *KeyInternalAPI) PerformUploadDeviceSignatures(ctx context.Context, req 
 
 	// Finally, generate a notification that we updated the signatures.
 	for userID := range req.Signatures {
+		masterKey := queryRes.MasterKeys[userID]
+		selfSigningKey := queryRes.SelfSigningKeys[userID]
+		_ = masterKey
+		_ = selfSigningKey
+
 		update := eduserverAPI.CrossSigningKeyUpdate{
-			UserID: userID,
+			UserID:         userID,
+			MasterKey:      &masterKey,
+			SelfSigningKey: &selfSigningKey,
 		}
 		if err := a.Producer.ProduceSigningKeyUpdate(update); err != nil {
 			res.Error = &api.KeyError{
@@ -485,9 +498,7 @@ func (a *KeyInternalAPI) crossSigningKeysFromDatabase(
 }
 
 func (a *KeyInternalAPI) QuerySignatures(ctx context.Context, req *api.QuerySignaturesRequest, res *api.QuerySignaturesResponse) {
-	logrus.Debugf("querySignatures: %+v", req.TargetIDs)
 	for targetUserID, forTargetUser := range req.TargetIDs {
-		logrus.Debugf("CrossSigningKeysForUser %s", targetUserID)
 		keyMap, err := a.DB.CrossSigningKeysForUser(ctx, targetUserID)
 		if err != nil && err != sql.ErrNoRows {
 			res.Error = &api.KeyError{
@@ -520,7 +531,6 @@ func (a *KeyInternalAPI) QuerySignatures(ctx context.Context, req *api.QuerySign
 		}
 
 		for _, targetKeyID := range forTargetUser {
-			logrus.Debugf("targetUserID: %s - targetKeyID: %+v", targetUserID, targetKeyID)
 			sigMap, err := a.DB.CrossSigningSigsForTarget(ctx, targetUserID, targetKeyID)
 			if err != nil && err != sql.ErrNoRows {
 				res.Error = &api.KeyError{

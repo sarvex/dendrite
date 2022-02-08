@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"fmt"
-	keyserverAPI "github.com/matrix-org/dendrite/keyserver/api"
 	"time"
 
 	"github.com/matrix-org/dendrite/federationapi/types"
@@ -45,7 +44,6 @@ type FederationInternalAPI interface {
 	gomatrixserverlib.KeyDatabase
 
 	KeyRing() *gomatrixserverlib.KeyRing
-	SetKeyserverAPI(k keyserverAPI.KeyInternalAPI)
 	QueryServerKeys(ctx context.Context, request *QueryServerKeysRequest, response *QueryServerKeysResponse) error
 
 	// PerformDirectoryLookup looks up a remote room ID from a room alias.

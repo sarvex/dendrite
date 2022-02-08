@@ -21,7 +21,6 @@ import (
 	"github.com/matrix-org/dendrite/federationapi/queue"
 	"github.com/matrix-org/dendrite/federationapi/storage"
 	"github.com/matrix-org/dendrite/federationapi/types"
-	keyapi "github.com/matrix-org/dendrite/keyserver/api"
 	"github.com/matrix-org/dendrite/roomserver/api"
 	"github.com/matrix-org/dendrite/setup/config"
 	"github.com/matrix-org/dendrite/setup/jetstream"
@@ -41,7 +40,6 @@ type OutputRoomEventConsumer struct {
 	db        storage.Database
 	queues    *queue.OutgoingQueues
 	topic     string
-	keyAPI    keyapi.KeyInternalAPI
 }
 
 // NewOutputRoomEventConsumer creates a new OutputRoomEventConsumer. Call Start() to begin consuming from room servers.
@@ -71,10 +69,6 @@ func (s *OutputRoomEventConsumer) Start() error {
 		s.ctx, s.jetstream, s.topic, s.durable, s.onMessage,
 		nats.DeliverAll(), nats.ManualAck(),
 	)
-}
-
-func (s *OutputRoomEventConsumer) SetKeyserverAPI(k keyapi.KeyInternalAPI) {
-	s.keyAPI = k
 }
 
 // onMessage is called when the federation server receives a new event from the room server output log.
@@ -127,12 +121,6 @@ func (s *OutputRoomEventConsumer) onMessage(ctx context.Context, msg *nats.Msg) 
 			}).Panicf("roomserver output log: remote peek event failure")
 			return false
 		}
-
-	case api.OutputTypeNewInviteEvent:
-		if err := s.processInviteEvent(ctx, output); err != nil {
-			log.WithError(err).Errorf("unable to process OutputTypeNewInviteEvent")
-			return false
-		}
 	default:
 		log.WithField("type", output.Type).Debug(
 			"roomserver output log: ignoring unknown output type",
@@ -140,50 +128,6 @@ func (s *OutputRoomEventConsumer) onMessage(ctx context.Context, msg *nats.Msg) 
 	}
 
 	return true
-}
-
-func (s *OutputRoomEventConsumer) processInviteEvent(ctx context.Context, event api.OutputEvent) error {
-	/*if event.NewInviteEvent.Event.Origin() == s.cfg.Matrix.ServerName {
-		return nil
-	}*/
-	userID := *event.NewInviteEvent.Event.StateKey()
-
-	res := keyapi.QueryDeviceMessagesResponse{}
-	s.keyAPI.QueryDeviceMessages(ctx, &keyapi.QueryDeviceMessagesRequest{UserID: userID}, &res)
-	if res.Error != nil {
-		log.WithError(res.Error).Errorf("unable to query device messages")
-		return res.Error
-	}
-
-	edu := &gomatrixserverlib.EDU{
-		Type:   gomatrixserverlib.MDeviceListUpdate,
-		Origin: string(s.cfg.Matrix.ServerName),
-	}
-
-	destinations := []gomatrixserverlib.ServerName{event.NewInviteEvent.Event.Origin()}
-	var err error
-	for _, dev := range res.Devices {
-		devUpdate := gomatrixserverlib.DeviceListUpdateEvent{
-			UserID:            userID,
-			DeviceID:          dev.DeviceID,
-			DeviceDisplayName: dev.DisplayName,
-			StreamID:          dev.StreamID,
-			PrevID:            prevID(dev.StreamID),
-			Deleted:           len(dev.KeyJSON) == 0,
-			Keys:              dev.KeyJSON,
-		}
-		if edu.Content, err = json.Marshal(devUpdate); err != nil {
-			return err
-		}
-
-		log.Debugf("(invite) Sending device list update message to %v -> %s -> %+v", destinations, string(dev.KeyJSON), devUpdate)
-		if err := s.queues.SendEDU(edu, s.cfg.Matrix.ServerName, destinations); err != nil {
-			log.WithError(err).Error("unable to send EDU to inviting server")
-			return err
-		}
-	}
-
-	return nil
 }
 
 // processInboundPeek starts tracking a new federated inbound peek (replacing the existing one if any)

@@ -192,7 +192,7 @@ func (t *KeyChangeConsumer) onCrossSigningMessage(m api.DeviceMessage) bool {
 		return true
 	}
 
-	logger.Infof("Sending cross-signing update message to %q", destinations)
+	logger.Infof("Sending cross-signing update message to %q -> %s", destinations, string(edu.Content))
 	err = t.queues.SendEDU(edu, t.serverName, destinations)
 	return err == nil
 }

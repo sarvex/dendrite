@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/matrix-org/dendrite/federationapi/consumers"
-	keyserverAPI "github.com/matrix-org/dendrite/keyserver/api"
 	"sync"
 	"time"
 
@@ -110,10 +109,6 @@ func NewFederationInternalAPI(
 		queues:     queues,
 		rsConsumer: rsConsumer,
 	}
-}
-
-func (a *FederationInternalAPI) SetKeyserverAPI(k keyserverAPI.KeyInternalAPI) {
-	a.rsConsumer.SetKeyserverAPI(k)
 }
 
 func (a *FederationInternalAPI) isBlacklistedOrBackingOff(s gomatrixserverlib.ServerName) (*statistics.ServerStatistics, error) {

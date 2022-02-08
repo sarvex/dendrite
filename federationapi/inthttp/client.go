@@ -3,7 +3,6 @@ package inthttp
 import (
 	"context"
 	"errors"
-	keyserverAPI "github.com/matrix-org/dendrite/keyserver/api"
 	"net/http"
 
 	"github.com/matrix-org/dendrite/federationapi/api"
@@ -58,8 +57,6 @@ type httpFederationInternalAPI struct {
 	httpClient       *http.Client
 	cache            caching.ServerKeyCache
 }
-
-func (h *httpFederationInternalAPI) SetKeyserverAPI(k keyserverAPI.KeyInternalAPI) {}
 
 // Handle an instruction to make_leave & send_leave with a remote server.
 func (h *httpFederationInternalAPI) PerformLeave(

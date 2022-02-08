@@ -232,7 +232,6 @@ func (a *KeyInternalAPI) QueryKeys(ctx context.Context, req *api.QueryKeysReques
 
 	// get cross-signing keys from the database
 	a.crossSigningKeysFromDatabase(ctx, req, res)
-	logrus.Debugf("QueryKeys.crossSigningKeysFromDatabase: %+v", req)
 	// make a map from domain to device keys
 	domainToDeviceKeys := make(map[string]map[string][]string)
 	domainToCrossSigningKeys := make(map[string]map[string]struct{})
@@ -308,21 +307,19 @@ func (a *KeyInternalAPI) QueryKeys(ctx context.Context, req *api.QueryKeysReques
 		// perform key queries for remote devices
 		a.queryRemoteKeys(ctx, req.Timeout, res, domainToDeviceKeys, domainToCrossSigningKeys)
 	}
-	logrus.Debugf("QueryKeys 3: %+v", res.DeviceKeys)
 	// Finally, append signatures that we know about
 	// TODO: This is horrible because we need to round-trip the signature from
 	// JSON, add the signatures and marshal it again, for some reason?
+
 	for userID, forUserID := range res.DeviceKeys {
 		for deviceID, key := range forUserID {
-
-			logrus.Debugf("getting crossSigsForTarget: %s - %s", userID, deviceID)
 			sigMap, err := a.DB.CrossSigningSigsForTarget(ctx, userID, gomatrixserverlib.KeyID(deviceID))
 			if err != nil {
 				logrus.WithError(err).Errorf("a.DB.CrossSigningSigsForTarget failed")
 				continue
 			}
-			logrus.Debugf("sigMap: %+v", sigMap)
 			if len(sigMap) == 0 {
+				logrus.WithFields(logrus.Fields{"userID": userID, "deviceID": deviceID}).Debugf("no signatures found in database")
 				continue
 			}
 			var deviceKey gomatrixserverlib.DeviceKeys
@@ -330,8 +327,14 @@ func (a *KeyInternalAPI) QueryKeys(ctx context.Context, req *api.QueryKeysReques
 				logrus.WithError(err).Errorf("a.DB.CrossSigningSigsForTarget Unmarshal failed")
 				continue
 			}
+			if deviceKey.Signatures == nil {
+				deviceKey.Signatures = make(map[string]map[gomatrixserverlib.KeyID]gomatrixserverlib.Base64Bytes)
+			}
 			for sourceUserID, forSourceUser := range sigMap {
 				for sourceKeyID, sourceSig := range forSourceUser {
+					if _, ok := deviceKey.Signatures[sourceUserID]; !ok {
+						deviceKey.Signatures[sourceUserID] = map[gomatrixserverlib.KeyID]gomatrixserverlib.Base64Bytes{}
+					}
 					deviceKey.Signatures[sourceUserID][sourceKeyID] = sourceSig
 				}
 			}
@@ -430,7 +433,6 @@ func (a *KeyInternalAPI) queryRemoteKeys(
 		// TODO: do we want to persist these somewhere now
 		// that we have fetched them?
 	}
-	logrus.Debugf("remote keys result: %+v", res)
 }
 
 func (a *KeyInternalAPI) queryRemoteKeysOnServer(
