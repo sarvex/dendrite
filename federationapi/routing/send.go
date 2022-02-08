@@ -413,8 +413,10 @@ func (t *txnReq) processSigningKeyUpdate(ctx context.Context, e gomatrixserverli
 	}
 	uploadRes := &keyapi.PerformUploadDeviceKeysResponse{}
 	t.keyAPI.PerformUploadDeviceKeys(ctx, uploadReq, uploadRes)
-
-	return uploadRes.Error
+	if uploadRes.Error != nil {
+		return uploadRes.Error
+	}
+	return nil
 }
 
 // processReceiptEvent sends receipt events to the edu server
