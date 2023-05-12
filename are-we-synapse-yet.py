@@ -127,9 +127,7 @@ def parse_test_line(line):
         return
     re_match = re_testname.match(line)
     test_name = re_match.groups()[1].replace("(expected fail) ", "").strip()
-    test_pass = False
-    if line.startswith("ok ") and not "# skip " in line:
-        test_pass = True
+    test_pass = bool(line.startswith("ok ") and "# skip " not in line)
     return {
         "name": test_name,
         "ok": test_pass,
@@ -170,7 +168,7 @@ def print_stats(header_name, gid_to_tests, gid_to_name, verbose):
             if passing:
                 group_passing += 1
             test_names_and_marks.append(f"{'✓' if passing else '×'} {name}")
-            
+
         total_tests += group_total
         total_passing += group_passing
         pct = "{0:.0f}%".format(group_passing/group_total * 100)
@@ -181,15 +179,15 @@ def print_stats(header_name, gid_to_tests, gid_to_name, verbose):
     # avoid errors when trying to divide by 0
     if total_tests == 0:
         return
-    
+
     pct = "{0:.0f}%".format(total_passing/total_tests * 100)
     print("%s: %s (%d/%d tests)" % (header_name, pct, total_passing, total_tests))
     print("-" * (len(header_name)+1))
     for line in subsections:
-        print("  %s" % (line,))
+        print(f"  {line}")
         if verbose:
             for test_name_and_pass_mark in subsection_test_names[line]:
-                print("    %s" % (test_name_and_pass_mark,))
+                print(f"    {test_name_and_pass_mark}")
             print("")
     print("")
 
@@ -199,7 +197,7 @@ def main(results_tap_path, verbose):
     fed_tests = set()
     client_tests = set()
     with open("./are-we-synapse-yet.list", "r") as f:
-        for line in f.readlines():
+        for line in f:
             test_name = " ".join(line.split(" ")[1:]).strip()
             groups = line.split(" ")[0].split(",")
             for gid in groups:
@@ -233,7 +231,7 @@ def main(results_tap_path, verbose):
         },
     }
     with open(results_tap_path, "r") as f:
-        for line in f.readlines():
+        for line in f:
             test_result = parse_test_line(line)
             if not test_result:
                 continue
