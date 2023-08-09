@@ -15,26 +15,23 @@ require (
 	github.com/containerd/containerd v1.5.9 // indirect
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/docker/go-connections v0.4.0
-	github.com/frankban/quicktest v1.14.0 // indirect
 	github.com/getsentry/sentry-go v0.12.0
 	github.com/gologme/log v1.3.0
 	github.com/gorilla/mux v1.8.0
-	github.com/gorilla/websocket v1.4.2
+	github.com/gorilla/websocket v1.5.0
 	github.com/h2non/filetype v1.1.3 // indirect
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/juju/testing v0.0.0-20211215003918-77eb13d6cad2 // indirect
-	github.com/klauspost/compress v1.14.2 // indirect
 	github.com/lib/pq v1.10.4
-	github.com/libp2p/go-libp2p v0.13.0
+	github.com/libp2p/go-libp2p v0.27.8
 	github.com/libp2p/go-libp2p-circuit v0.4.0
-	github.com/libp2p/go-libp2p-core v0.8.3
+	github.com/libp2p/go-libp2p-core v0.19.0
 	github.com/libp2p/go-libp2p-gostream v0.3.1
 	github.com/libp2p/go-libp2p-http v0.2.0
 	github.com/libp2p/go-libp2p-kad-dht v0.11.1
 	github.com/libp2p/go-libp2p-pubsub v0.4.1
 	github.com/libp2p/go-libp2p-record v0.1.3
-	github.com/lucas-clemente/quic-go v0.22.0
-	github.com/marten-seemann/qtls-go1-17 v0.1.0 // indirect
+	github.com/lucas-clemente/quic-go v0.28.1
 	github.com/matrix-org/dugong v0.0.0-20210921133753-66e6b1c67e2e
 	github.com/matrix-org/go-http-js-libp2p v0.0.0-20200518170932-783164aeeda4
 	github.com/matrix-org/go-sqlite3-js v0.0.0-20210709140738-b0d1ba599a6d
@@ -53,23 +50,21 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/pressly/goose v2.7.0+incompatible
-	github.com/prometheus/client_golang v1.12.1
+	github.com/prometheus/client_golang v1.14.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/tidwall/gjson v1.14.0
 	github.com/tidwall/sjson v1.2.4
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible
 	github.com/yggdrasil-network/yggdrasil-go v0.4.2
-	go.uber.org/atomic v1.9.0
-	golang.org/x/crypto v0.0.0-20220209195652-db638375bc3a
+	go.uber.org/atomic v1.10.0
+	golang.org/x/crypto v0.7.0
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410
 	golang.org/x/mobile v0.0.0-20220112015953-858099ff7816
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
-	golang.org/x/sys v0.0.0-20220207234003-57398862261d // indirect
-	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211
+	golang.org/x/net v0.8.0
+	golang.org/x/term v0.6.0
 	gopkg.in/h2non/bimg.v1 v1.1.5
 	gopkg.in/yaml.v2 v2.4.0
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	nhooyr.io/websocket v1.8.7
 )
 
