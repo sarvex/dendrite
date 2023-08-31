@@ -27,7 +27,7 @@ require (
 	github.com/matrix-org/util v0.0.0-20221111132719-399730281e66
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/nats-io/nats-server/v2 v2.9.19
-	github.com/nats-io/nats.go v1.27.0
+	github.com/nats-io/nats.go v1.28.0
 	github.com/neilalexander/utp v0.1.1-0.20210727203401-54ae7b1cd5f9
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/opentracing/opentracing-go v1.2.0
