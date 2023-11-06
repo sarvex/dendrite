@@ -52,7 +52,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	gotest.tools/v3 v3.4.0
 	maunium.net/go/mautrix v0.15.1
-	modernc.org/sqlite v1.23.1
+	modernc.org/sqlite v1.27.0
 	nhooyr.io/websocket v1.8.7
 )
 
@@ -135,9 +135,9 @@ require (
 	maunium.net/go/maulogger/v2 v2.4.1 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect
 	modernc.org/ccgo/v3 v3.16.13 // indirect
-	modernc.org/libc v1.22.5 // indirect
-	modernc.org/mathutil v1.5.0 // indirect
-	modernc.org/memory v1.5.0 // indirect
+	modernc.org/libc v1.29.0 // indirect
+	modernc.org/mathutil v1.6.0 // indirect
+	modernc.org/memory v1.7.2 // indirect
 	modernc.org/opt v0.1.3 // indirect
 	modernc.org/strutil v1.1.3 // indirect
 	modernc.org/token v1.0.1 // indirect
