@@ -1,8 +1,8 @@
 module github.com/matrix-org/dendrite
 
 require (
-	github.com/Arceliar/ironwood v0.0.0-20221025225125-45b4281814c2
-	github.com/Arceliar/phony v0.0.0-20210209235338-dde1a8dca979
+	github.com/Arceliar/ironwood v0.0.0-20240529054413-b8e59574e2b2
+	github.com/Arceliar/phony v0.0.0-20220903101357-530938a4b13d
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/MFAshby/stdemuxerhook v1.0.0
 	github.com/Masterminds/semver/v3 v3.1.1
@@ -42,12 +42,12 @@ require (
 	github.com/uber/jaeger-lib v2.4.1+incompatible
 	github.com/yggdrasil-network/yggdrasil-go v0.4.6
 	go.uber.org/atomic v1.10.0
-	golang.org/x/crypto v0.12.0
+	golang.org/x/crypto v0.23.0
 	golang.org/x/exp v0.0.0-20230809150735-7b3493d9a819
 	golang.org/x/image v0.5.0
 	golang.org/x/mobile v0.0.0-20221020085226-b36e6246172e
 	golang.org/x/sync v0.3.0
-	golang.org/x/term v0.11.0
+	golang.org/x/term v0.20.0
 	gopkg.in/h2non/bimg.v1 v1.1.9
 	gopkg.in/yaml.v2 v2.4.0
 	gotest.tools/v3 v3.4.0
@@ -61,7 +61,8 @@ require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/RoaringBitmap/roaring v1.2.3 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/bits-and-blooms/bitset v1.5.0 // indirect
+	github.com/bits-and-blooms/bitset v1.13.0 // indirect
+	github.com/bits-and-blooms/bloom/v3 v3.7.0 // indirect
 	github.com/blevesearch/bleve_index_api v1.0.5 // indirect
 	github.com/blevesearch/geo v0.1.17 // indirect
 	github.com/blevesearch/go-porterstemmer v1.0.3 // indirect
@@ -123,9 +124,9 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.14.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.12.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
